@@ -6,7 +6,7 @@
 /*   By: abidolet <abidolet@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 00:48:31 by abidolet          #+#    #+#             */
-/*   Updated: 2025/06/02 12:30:40 by abidolet         ###   ########.fr       */
+/*   Updated: 2025/07/02 22:19:05 by abidolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 int	ft_atoi_base(const char *str, int str_base)
 {
-	int	sign;
-	int	res;
+	int		sign;
+	long	res;
 
 	if (!str || str_base < 2 || str_base > 36)
 		return (0);
