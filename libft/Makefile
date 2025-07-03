@@ -1,7 +1,7 @@
 NAME = libft.a
 
 CC = cc
-CFLAGS = -Wall -Werror -Wextra -Iincludes -MD
+CFLAGS = -Wall -Werror -Wextra -Iincludes -MD -g3
 
 VPATH = srcs:srcs/is:srcs/mem:srcs/str:srcs/to:srcs/lst:srcs/math:srcs/algo:srcs/printf:srcs/gnl
 
@@ -36,6 +36,8 @@ SRCS_LST =	ft_lstadd_back.c	\
 			ft_lstlast.c		\
 			ft_lstmap.c			\
 			ft_lstnew.c			\
+			ft_lstremove_if.c	\
+			ft_lstreverse.c		\
 			ft_lstsize.c		\
 			ft_lstsort.c		\
 

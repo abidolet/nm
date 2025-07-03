@@ -1,36 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_lstsort.c                                       :+:      :+:    :+:   */
+/*   ft_lstreverse.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: abidolet <abidolet@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/20 01:00:17 by abidolet          #+#    #+#             */
-/*   Updated: 2025/07/03 21:12:14 by abidolet         ###   ########.fr       */
+/*   Created: 2025/07/03 23:40:52 by abidolet          #+#    #+#             */
+/*   Updated: 2025/07/04 00:08:40 by abidolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft/lst.h"
 #include <stddef.h>
 
-t_list	*ft_lstsort(t_list *lst, int (*cmp)(void *, void *))
+void	ft_lstreverse(t_list **lst)
 {
-	t_list	*res;
+	t_list	*prev;
 	t_list	*current;
-	t_list	**insert;
+	t_list	*next;
 
-	if (!lst || !cmp)
-		return (lst);
-	res = NULL;
-	while (lst)
+	if (lst && *lst)
 	{
-		current = lst;
-		lst = lst->next;
-		insert = &res;
-		while (*insert && cmp(current->content, (*insert)->content) > 0)
-			insert = &(*insert)->next;
-		current->next = *insert;
-		*insert = current;
+		prev = NULL;
+		current = *lst;
+		while (current != NULL)
+		{
+			next = current->next;
+			current->next = prev;
+			prev = current;
+			current = next;
+		}
+		*lst = prev;
 	}
-	return (res);
 }

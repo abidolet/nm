@@ -5,7 +5,7 @@ OBJ_DIR = .bin-$(MODE)
 INCLUDES = -Iincludes -Ilibft/includes
 
 CC = cc
-CFLAGS = -Wall -Werror -Wextra -MD $(INCLUDES)
+CFLAGS = -Wall -Werror -Wextra -MD $(INCLUDES) -g3
 
 ifeq ($(MODE), debug)
 	CC = cc
