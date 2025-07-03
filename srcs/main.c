@@ -8,11 +8,12 @@
 #include <stdlib.h>
 #include <elf.h>
 #include <unistd.h>
+#include <libft/lst.h>
+#include <ar.h>
 
 void	error(char *msg)
 {
-	perror(msg);
-	exit(1);
+	ft_dprintf(2, "ft_nm: %s\n", msg);
 }
 
 char	 get_symbol_type(Elf64_Sym *sym, Elf64_Shdr *shdr, char *strtab)
@@ -47,6 +48,17 @@ char	 get_symbol_type(Elf64_Sym *sym, Elf64_Shdr *shdr, char *strtab)
 	return ('?');
 }
 
+int is_archive_file(int fd)
+{
+	char	magic[SARMAG];
+
+	if (read(fd, magic, SARMAG) != SARMAG)
+	{
+		return (0);
+	}
+	return (ft_memcmp(magic, ARMAG, SARMAG) == 0);
+}
+
 int	main(int ac, char **av)
 {
 	char	*file = (ac == 1 ? "a.out" : av[1]);
@@ -62,27 +74,39 @@ int	main(int ac, char **av)
 	if (fstat(fd, &st))
 	{
 		error("fstat failed");
+		exit(1);
 	}
 
 	void	*map = mmap(NULL, st.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
 	if (map == MAP_FAILED)
 	{
 		error("mmap failed");
+		exit(1);
 	}
 
 	Elf64_Ehdr	*ehdr = (Elf64_Ehdr *)map;
+	if (ft_memcmp(ehdr->e_ident, ELFMAG, SELFMAG) != 0 && is_archive_file(fd))
+	{
+		ft_dprintf(2, "ft_nm: %s: file format not recognized\n", file);
+		close(fd);
+		exit(1);
+	}
+
 	Elf64_Shdr	*shdr = (Elf64_Shdr *)((char *)map + ehdr->e_shoff);
+
+	// t_list *lst = NULL;
 
 	for (int i = 0; i < ehdr->e_shnum; i++)
 	{
 		if (shdr[i].sh_type == SHT_SYMTAB)
 		{
+			// char	**name[3];
 			Elf64_Sym	*symtab = (Elf64_Sym *)((char *)map + shdr[i].sh_offset);
 			int			symcount = shdr[i].sh_size / sizeof(Elf64_Sym);
 
 			for (int j = 0; j < symcount; j++)
 			{
-				char		buf[20];
+				char		buf[17];
 				Elf64_Sym	*sym = &symtab[j];
 				char		*strtab = (char *)map + shdr[shdr[i].sh_link].sh_offset;
 
@@ -90,6 +114,7 @@ int	main(int ac, char **av)
 					snprintf(buf, sizeof(buf), "%016lx", symtab[j].st_value);
 					if (ft_strcmp(buf, "0000000000000000"))
 					{
+						// name[0] = buf;
 						ft_printf("%s", buf);
 					}
 				}
@@ -102,8 +127,10 @@ int	main(int ac, char **av)
 						{
 							continue ;
 						}
+						// name[1] = "                ";
 						ft_printf("                ");
 					}
+					// name[1] = &c;
 					ft_printf(" %c ", c);
 				}
 
@@ -119,5 +146,6 @@ int	main(int ac, char **av)
 		}
 	}
 
+	munmap(map, st.st_size);
 	return (0);
 }
