@@ -6,7 +6,7 @@
 /*   By: abidolet <abidolet@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 22:16:16 by abidolet          #+#    #+#             */
-/*   Updated: 2025/06/02 12:26:01 by abidolet         ###   ########.fr       */
+/*   Updated: 2025/07/04 08:27:27 by abidolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ long long	ft_atoll(const char *nptr);
 double		ft_atod(const char *nptr);
 char		*ft_itoa(int n);
 int			ft_strtoi(const char *nptr, char **end, int base);
+long		ft_strtol(const char *nptr, char **endptr, int base);
 int			ft_tolower(int c);
 int			ft_toupper(int c);
 

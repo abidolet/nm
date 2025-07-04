@@ -91,6 +91,7 @@ SRCS_TO =	ft_atod.c			\
 			ft_itoa.c			\
 			ft_strtod.c			\
 			ft_strtoi.c			\
+			ft_strtol.c			\
 			ft_tolower.c		\
 			ft_toupper.c		\
 

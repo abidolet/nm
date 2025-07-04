@@ -6,7 +6,7 @@
 /*   By: abidolet <abidolet@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/31 23:39:27 by abidolet          #+#    #+#             */
-/*   Updated: 2025/06/02 11:40:58 by abidolet         ###   ########.fr       */
+/*   Updated: 2025/07/04 08:37:38 by abidolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,9 +70,9 @@ double	ft_strtod(const char *nptr, char **endptr)
 	int				sign;
 	const double	nan = 0.0 / 0.0;
 
-	if (!nptr || !endptr)
+	if (!nptr)
 		return (nan);
-	*endptr = (char *)nptr;
+	endptr = (char **)&nptr;
 	res = 0.0;
 	sign = 1;
 	while (ft_isspace(**endptr))
