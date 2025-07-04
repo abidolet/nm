@@ -6,13 +6,11 @@
 /*   By: abidolet <abidolet@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/14 17:13:09 by abidolet          #+#    #+#             */
-/*   Updated: 2025/02/15 22:31:59 by abidolet         ###   ########.fr       */
+/*   Updated: 2025/07/04 23:29:56 by abidolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stddef.h>
-
-void	ft_bzero(void *s, size_t n)
+void	ft_bzero(void *s, unsigned long n)
 {
 	while (n-- > 0)
 		((unsigned char *)s)[n] = 0;

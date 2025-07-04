@@ -10,14 +10,12 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stddef.h>
-
-void	*ft_memmove(void *dest, const void *src, size_t n)
+void	*ft_memmove(void *dest, const void *src, unsigned long n)
 {
 	void	*res;
 
 	if (!dest && !src)
-		return (NULL);
+		return (0x0);
 	res = dest;
 	if (dest < src || (unsigned char *)dest >= (unsigned char *)src + n)
 		while (n--)

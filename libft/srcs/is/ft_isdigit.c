@@ -6,13 +6,11 @@
 /*   By: abidolet <abidolet@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 20:17:16 by abidolet          #+#    #+#             */
-/*   Updated: 2025/05/11 09:59:07 by abidolet         ###   ########.fr       */
+/*   Updated: 2025/07/04 23:47:29 by abidolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdbool.h>
-
-bool	ft_isdigit(int c)
+int	ft_isdigit(int c)
 {
 	return ('0' <= c && c <= '9');
 }

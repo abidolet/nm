@@ -10,12 +10,10 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stddef.h>
-
 char	*ft_strchr(const char *s, int c)
 {
 	while (s && *s != (char)c)
 		if (!*s++)
-			return (NULL);
+			return (0x0);
 	return ((char *)s);
 }

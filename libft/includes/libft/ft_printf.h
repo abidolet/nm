@@ -6,26 +6,25 @@
 /*   By: abidolet <abidolet@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 13:23:44 by abidolet          #+#    #+#             */
-/*   Updated: 2025/07/02 15:48:43 by abidolet         ###   ########.fr       */
+/*   Updated: 2025/07/04 23:33:24 by abidolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FT_PRINTF_H
 # define FT_PRINTF_H
 
-# include <stdbool.h>
-# include <stddef.h>
+# include "libft/bool.h"
 
 typedef struct s_flags
 {
-	bool	minus;
-	bool	zero;
-	bool	dot;
-	size_t	width;
-	bool	hash;
-	bool	space;
-	bool	plus;
-	size_t	precision;
+	BOOL			minus;
+	BOOL			zero;
+	BOOL			dot;
+	unsigned long	width;
+	BOOL			hash;
+	BOOL			space;
+	BOOL			plus;
+	unsigned long	precision;
 }	t_flags;
 
 int	ft_printf(const char *str, ...);

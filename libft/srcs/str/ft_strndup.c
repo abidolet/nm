@@ -6,7 +6,7 @@
 /*   By: abidolet <abidolet@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 23:37:34 by abidolet          #+#    #+#             */
-/*   Updated: 2025/05/10 16:01:46 by abidolet         ###   ########.fr       */
+/*   Updated: 2025/07/04 23:22:10 by abidolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include "libft/math.h"
 #include <stdlib.h>
 
-char	*ft_strndup(const char *s, size_t n)
+char	*ft_strndup(const char *s, unsigned long n)
 {
 	char	*res;
 

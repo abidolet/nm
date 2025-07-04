@@ -6,7 +6,7 @@
 /*   By: abidolet <abidolet@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 10:33:55 by abidolet          #+#    #+#             */
-/*   Updated: 2025/05/10 19:03:26 by abidolet         ###   ########.fr       */
+/*   Updated: 2025/07/04 23:22:10 by abidolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int	ft_putchar_fd(char c, int fd)
 
 int	ft_putstr_fd(char *s, int fd)
 {
-	size_t	size;
+	unsigned long	size;
 
 	size = 0;
 	while (s[size])

@@ -4,6 +4,8 @@
 #include "libft/str.h"
 #include "libft/mem.h"
 #include "libft/to.h"
+#include "libft/bool.h"
+#include "libft/color.h"
 #include <sys/stat.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,12 +13,50 @@
 #include <unistd.h>
 #include <libft/lst.h>
 #include <ar.h>
+#include <errno.h>
 
 #define FREE(ptr) free(ptr); ptr = NULL;
+#define CLOSE(fd) if (fd > 2) close(fd), fd = -1;
+#define INFO __FILE__, __LINE__, __func__
 
-void	error(char *msg)
+typedef struct	data
 {
-	ft_dprintf(2, "ft_nm: %s\n", msg);
+	t_list	*files;
+	char	*file;
+	size_t	nb_files;
+	char	**line;
+	BOOL	a;
+	BOOL	g;
+	BOOL	p;
+	BOOL	r;
+	BOOL	u;
+	int		exit_code;
+	int		fd;
+}	t_data;
+
+void	free_all(t_data *data)
+{
+	FREE(data->file);
+	if (data->files)
+	{
+		ft_lstclear(&data->files, free);
+		data->files = NULL;
+	}
+	free_arr((void **)data->line);
+	CLOSE(data->fd);
+	exit(data->exit_code);
+}
+
+void	check_mem(const char *file, const int line, const char *func, void *mem, void **res, t_data *data)
+{
+	if (!mem)
+	{
+		ft_dprintf(2, "ft_nm: %s%s:%d: %smalloc assertion failed in %s'%s'\n",
+			GRAY, file, line, RED, RESET, func);
+		data->exit_code = 1;
+		free_all(data);
+	}
+	*res = mem;
 }
 
 char	get_symbol_type(Elf64_Sym *sym, Elf64_Shdr *shdr, char *strtab)
@@ -58,17 +98,6 @@ char	get_symbol_type(Elf64_Sym *sym, Elf64_Shdr *shdr, char *strtab)
 	return ('?');
 }
 
-int is_archive_file(int fd)
-{
-	char	magic[SARMAG];
-
-	if (read(fd, magic, SARMAG) != SARMAG)
-	{
-		return (0);
-	}
-	return (ft_memcmp(magic, ARMAG, SARMAG) == 0);
-}
-
 void	print_line(void *content)
 {
 	char	**line = (char **)content;
@@ -78,9 +107,7 @@ void	print_line(void *content)
 void	free_line(void *content)
 {
 	char	**line = (char **)content;
-	FREE(line[0]);
-	FREE(line[1]);
-	FREE(line);
+	free_arr((void **)line);
 }
 
 int	sort_line(void *content1, void *content2)
@@ -94,129 +121,121 @@ int	sort_line(void *content1, void *content2)
 		return (name_cmp);
 	}
 
-	unsigned long	addr1 = ft_strtol(line1[0], NULL, 16);
-	unsigned long	addr2 = ft_strtol(line2[0], NULL, 16);
+	unsigned long	addr1 = strtoul(line1[0], NULL, 16);
+	unsigned long	addr2 = strtoul(line2[0], NULL, 16);
 	return (addr1 < addr2);
 }
 
-struct	flags
+void	print_options(const int fd, t_data *data)
 {
-	t_list	*files;
-	bool	a;
-	bool	g;
-	bool	p;
-	bool	r;
-	bool	u;
-	int		exit_code;
-	size_t	nb_files;
-};
+	char	*msg = "Usage: ./ft_nm [option(s)] [file(s)]\n"
+		" List symbols in [file(s)] (a.out by default).\n"
+		" The options are:\n"
+		"  -a, --debug-syms\t Display debugger-only symbols\n"
+		"  -e, \t\t\t (ignored)\n"
+		"  -g, --extern-only\t Display only external symbols\n"
+		"  -p, --no-sort\t\t Do not sort the symbols\n"
+		"  -r, --reverse-sort\t Reverse the sense of the sort\n"
+		"  -u, --undefined-only\t Display only undefined symbols\n"
+		"  -h, --help \t\t Display this information\n"
+		"ft_nm: supported targets: x86_32 x64 objectfiles .so\n";
 
-void	print_options(int fd)
-{
-	ft_dprintf(fd, "Usage: ./ft_nm [option(s)] [file(s)]\n");
-	ft_dprintf(fd, " List symbols in [file(s)] (a.out by default).\n");
-	ft_dprintf(fd, " The options are:\n");
-	ft_dprintf(fd, "  -a, --debug-syms\t Display debugger-only symbols\n");
-	ft_dprintf(fd, "  -e, \t\t\t (ignored)\n");
-	ft_dprintf(fd, "  -g, --extern-only\t Display only external symbols\n");
-	ft_dprintf(fd, "  -p, --no-sort\t\t Do not sort the symbols\n");
-	ft_dprintf(fd, "  -r, --reverse-sort\t Reverse the sense of the sort\n");
-	ft_dprintf(fd, "  -u, --undefined-only\t Display only undefined symbols\n");
-	ft_dprintf(fd, "  -h, --help \t\t Display this information\n");
-	ft_dprintf(fd, "ft_nm: supported targets: x86_32 x64 objectfiles .so\n");
+	ft_dprintf(fd, msg);
 	if (fd == 1)
 	{
 		ft_printf("Report bugs to <abidolet@student.42lyon.fr>.\n");
 	}
+	data->exit_code = (fd == 2);
+	free_all(data);
 }
 
-void	parse_flags(int ac, char **av, struct flags *flags)
+void	parse_flags(const int ac, char **av, t_data *data)
 {
+	t_list	*new_node = NULL;
+	char	*option;
+
 	for (int i = 1; i < ac; i++)
 	{
 		if (*av[i] == '-')
 		{
 			if (av[i][1] != '-')
 			{
-				char	*option = av[i] + 1;
+				option = av[i] + 1;
 
 				while (*option)
 				{
 					switch (*option)
 					{
-						case 'a':	flags->a = true; break ;
+						case 'a':	data->a = TRUE; break ;
 						case 'e':	break ;
-						case 'g':	flags->g = true; break ;
-						case 'p':	flags->p = true; break ;
-						case 'r':	flags->r = true; break ;
-						case 'u':	flags->u = true; break ;
-						case 'h':	print_options(1);
-										exit(0);
-						default:	ft_dprintf(2, "ft_nm: invalid option -- '%c'\n", *option);
-										print_options(2);
-										exit(1);
+						case 'g':	data->g = TRUE; break ;
+						case 'p':	data->p = TRUE; break ;
+						case 'r':	data->r = TRUE; break ;
+						case 'u':	data->u = TRUE; break ;
+						case 'h':	print_options(1, data); break ;
+						default:	ft_dprintf(2, "ft_nm: invalid option -- '%c'\n", *option); print_options(2, data);
 					}
 					option++;
 				}
 			}
 			else
 			{
-				char	*option = av[i] + 2;
+				option = av[i] + 2;
 
 				if (ft_strcmp(option, "debug-syms") == 0)
 				{
-					flags->a = true;
+					data->a = TRUE;
 				}
 				else if (ft_strcmp(option, "extern-only") == 0)
 				{
-					flags->g = true;
+					data->g = TRUE;
 				}
 				else if (ft_strcmp(option, "no-sort") == 0)
 				{
-					flags->p = true;
+					data->p = TRUE;
 				}
 				else if (ft_strcmp(option, "reverse-sort") == 0)
 				{
-					flags->r = true;
+					data->r = TRUE;
 				}
 				else if (ft_strcmp(option, "undefined-only") == 0)
 				{
-					flags->u = true;
+					data->u = TRUE;
 				}
 				else if (ft_strcmp(option, "help") == 0)
 				{
-					print_options(1);
-					exit(0);
+					print_options(1, data);
 				}
 				else
 				{
 					ft_dprintf(2, "ft_nm: unrecognized option '--%s'\n", option);
-					print_options(2);
-					exit(1);
+					print_options(2, data);
 				}
 			}
 		}
 		else
 		{
-			char	*file = ft_strdup(av[i]);
-			t_list	*new_node = ft_lstnew(file);
-			ft_lstadd_back(&flags->files, new_node);
+			check_mem(INFO, ft_strdup(av[i]), (void **)&data->file, data);
+			check_mem(INFO, ft_lstnew(data->file), (void **)&new_node, data);
+			ft_lstadd_back(&data->files, new_node);
+			data->file = NULL;
 		}
 	}
 
-	flags->nb_files = ft_lstsize(flags->files);
-	if (flags->nb_files == 0)
+	data->nb_files = ft_lstsize(data->files);
+	if (data->nb_files == 0)
 	{
-		char	*file = ft_strdup("a.out");
-		t_list	*new_node = ft_lstnew(file);
-		ft_lstadd_back(&flags->files, new_node);
+		check_mem(INFO, ft_strdup("a.out"), (void **)&data->file, data);
+		check_mem(INFO, ft_lstnew(data->file), (void **)&new_node, data);
+		ft_lstadd_back(&data->files, new_node);
+		data->file = NULL;
 	}
 }
 
-void	print_flags(struct flags *flags)
+void	print_flags(struct data *data)
 {
 	ft_printf("Flags: a=%d, g=%d, u=%d, r=%d, p=%d nb_files=%d\n",
-		flags->a, flags->g, flags->u, flags->r, flags->p, flags->nb_files);
+		data->a, data->g, data->u, data->r, data->p, data->nb_files);
 }
 
 int	is_undefined_symbol(void *content, void *ref)
@@ -237,56 +256,72 @@ int	is_global_symbol(void *content, void *ref)
 
 int	main(int ac, char **av)
 {
-	struct flags	flags;
-	ft_bzero(&flags, sizeof(flags));
-	parse_flags(ac, av, &flags);
-	// print_flags(&flags);
+	struct data	data;
+	ft_bzero(&data, sizeof(data));
+	parse_flags(ac, av, &data);
+	// print_flags(&data);
 
-	t_list	*tmp = flags.files;
-	while (flags.files)
+	t_list	*tmp = data.files;
+	while (data.files)
 	{
-		char	*file = flags.files->content;
+		char	*file = data.files->content;
 
-		int	fd = open(file, O_RDONLY);
-		if (fd < 0)
+		data.fd = open(file, O_RDONLY);
+		if (data.fd < 0)
 		{
-			ft_dprintf(2, "ft_nm: '%s': No such file\n", file);
-			flags.exit_code = 1;
-			flags.files = flags.files->next;
+			data.exit_code = 1;
+			if (errno == ENOENT)
+			{
+				ft_dprintf(2, "ft_nm: '%s': No such file\n", file);
+			}
+			else if (errno == EACCES)
+			{
+				ft_dprintf(2, "ft_nm: %s: Permission denied\n", file);
+			}
+			else
+			{
+				perror("open failed");
+				free_all(&data);
+			}
+			data.files = data.files->next;
 			continue ;
 		}
 
 		struct stat	st;
-		if (fstat(fd, &st))
+		if (fstat(data.fd, &st))
 		{
 			perror("fstat failed");
-			exit(1);
+			data.exit_code = 1;
+			free_all(&data);
 		}
 		else if (S_ISDIR(st.st_mode))
 		{
 			ft_dprintf(2, "ft_nm: Warning: '%s' is a directory\n", file);
-			close(fd);
-			flags.exit_code = 1;
-			flags.files = flags.files->next;
+			CLOSE(data.fd);
+			data.exit_code = 1;
+			data.files = data.files->next;
 			continue ;
 		}
 
-		void	*map = mmap(NULL, st.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
+		void	*map = mmap(NULL, st.st_size, PROT_READ, MAP_PRIVATE, data.fd, 0);
+		CLOSE(data.fd);
 		if (map == MAP_FAILED)
 		{
-			perror("mmap failed");
-			exit(1);
+			data.exit_code = 1;
+			data.files = data.files->next;
+			continue ;
 		}
 
 		Elf64_Ehdr	*ehdr = (Elf64_Ehdr *)map;
-		if (ft_memcmp(ehdr->e_ident, ELFMAG, SELFMAG) != 0 && is_archive_file(fd))
+		if (ft_memcmp(ehdr->e_ident, ELFMAG, SELFMAG) != 0)
 		{
 			ft_dprintf(2, "ft_nm: %s: file format not recognized\n", file);
-			close(fd);
-			exit(1);
+			data.exit_code = 1;
+			data.files = data.files->next;
+			continue ;
 		}
 
-		if (flags.nb_files > 1)
+		if (data.nb_files > 1)
 		{
 			ft_printf("\n%s:\n", file);
 		}
@@ -303,66 +338,60 @@ int	main(int ac, char **av)
 
 				for (int j = 0; j < symcount; j++)
 				{
-					char		**line = ft_calloc(3, sizeof(char *));
-					line[0] = ft_calloc(17, sizeof(char));
-					line[1] = ft_calloc(2, sizeof(char));
+					check_mem(INFO, ft_calloc(4, sizeof(char *)), (void **)&data.line, &data);
+					check_mem(INFO, ft_calloc(17, sizeof(char)), (void **)&data.line[0], &data);
+					check_mem(INFO, ft_calloc(2, sizeof(char)), (void **)&data.line[1], &data);
+
 					Elf64_Sym	*sym = &symtab[j];
 					char		*strtab = (char *)map + shdr[shdr[i].sh_link].sh_offset;
 
 					{
-						snprintf(line[0], 17, "%016lx", symtab[j].st_value);
+						snprintf(data.line[0], 17, "%016lx", symtab[j].st_value);
 					}
 
 					{
-						*line[1] = get_symbol_type(&symtab[j], shdr, strtab);
-						if (!ft_strcmp(line[0], "0000000000000000") && !(flags.a && *line[1] == 'a'))
+						*data.line[1] = get_symbol_type(&symtab[j], shdr, strtab);
+						if (!ft_strcmp(data.line[0], "0000000000000000") && !(data.a && *data.line[1] == 'a'))
 						{
-							if ((!flags.a && (*line[1] == 'A' || *line[1] == 't' || *line[1] == 'r')) || *line[1] == '?')
+							if (*data.line[1] == 'a' || *data.line[1] == 'A' || *data.line[1] == 't' || *data.line[1] == 'r' || *data.line[1] == '?')
 							{
-								free_line(line);
+								free_line(data.line);
 								continue ;
 							}
-							if (*line[1] != 'T')
+							if (*data.line[1] != 'T')
 							{
-								FREE(line[0]);
-								line[0] = ft_strdup("                ");
+								ft_memset(data.line[0], ' ', 16);
 							}
 						}
 					}
 
 					{
-						if (sym->st_name != 0)
-						{
-							line[2] = &strtab[sym->st_name];
-						}
-						else
-						{
-							line[2] = "";
-						}
+						check_mem(INFO, ft_strdup(&strtab[sym->st_name]), (void **)&data.line[2], &data);
 					}
 
-					t_list	*new_node = ft_lstnew((void *)line);
+					t_list	*new_node = NULL;
+					check_mem(INFO, ft_lstnew(data.line), (void **)&new_node, &data);
 					ft_lstadd_back(&lst, new_node);
 				}
 			}
 		}
 
-		if (!flags.a)
+		if (!data.a)
 		{
-			if (flags.u)
+			if (data.u)
 			{
 				ft_lstremove_if(&lst, NULL, is_undefined_symbol, free_line);
 			}
-			else if (flags.g)
+			else if (data.g)
 			{
 				ft_lstremove_if(&lst, NULL, is_global_symbol, free_line);
 			}
 		}
 
-		if (!flags.p)
+		if (!data.p)
 		{
 			lst = ft_lstsort(lst, sort_line);
-			if (flags.r)
+			if (data.r)
 			{
 				ft_lstreverse(&lst);
 			}
@@ -372,11 +401,9 @@ int	main(int ac, char **av)
 		ft_lstclear(&lst, free_line);
 
 		munmap(map, st.st_size);
-		close(fd);
-
-		flags.files = flags.files->next;
+		data.files = data.files->next;
 	}
 
 	ft_lstclear(&tmp, free);
-	return (flags.exit_code);
+	return (data.exit_code);
 }

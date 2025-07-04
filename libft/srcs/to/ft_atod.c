@@ -6,7 +6,7 @@
 /*   By: abidolet <abidolet@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/31 23:40:04 by abidolet          #+#    #+#             */
-/*   Updated: 2025/06/01 12:24:39 by abidolet         ###   ########.fr       */
+/*   Updated: 2025/07/04 23:38:00 by abidolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ static void	get_exponent(const char *nptr, double *res)
 		}
 	}
 	power = ft_pow(10.0, exponent * exp_sign);
-	if (power == 0.0 || isinf(power))
+	if (power == 0.0)
 		*res = nan;
 	else
 		*res *= power;

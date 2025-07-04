@@ -13,11 +13,11 @@
 #include "libft/mem.h"
 #include <stdlib.h>
 
-void	*ft_calloc(size_t nmemb, size_t size)
+void	*ft_calloc(unsigned long nmemb, unsigned long size)
 {
 	void	*res;
 
-	if (nmemb != 0 && size > (size_t) - 1 / nmemb)
+	if (nmemb != 0 && size > (unsigned long) - 1 / nmemb)
 		return (NULL);
 	res = malloc(nmemb * size);
 	if (!res)

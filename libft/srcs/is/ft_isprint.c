@@ -6,13 +6,11 @@
 /*   By: abidolet <abidolet@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 20:17:24 by abidolet          #+#    #+#             */
-/*   Updated: 2025/05/11 10:05:42 by abidolet         ###   ########.fr       */
+/*   Updated: 2025/07/04 23:47:40 by abidolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdbool.h>
-
-bool	ft_isprint(int c)
+int	ft_isprint(int c)
 {
 	return (32 <= c && c <= 126);
 }

@@ -6,7 +6,7 @@
 /*   By: abidolet <abidolet@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/11 10:22:40 by abidolet          #+#    #+#             */
-/*   Updated: 2025/06/01 00:11:26 by abidolet         ###   ########.fr       */
+/*   Updated: 2025/07/04 23:22:10 by abidolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ double	ft_log(double x)
 	double	y;
 	double	res;
 	double	term;
-	size_t	i;
+	unsigned long	i;
 
 	if (x <= 0.0)
 		return (0.0 / 0.0);
@@ -64,7 +64,7 @@ double	ft_exp(double x)
 {
 	double	term;
 	double	res;
-	size_t	i;
+	unsigned long	i;
 
 	if (x > LNMAX)
 		return (1.0 / 0.0);
@@ -130,7 +130,7 @@ double	ft_tan(double x)
 double	ft_atan(double x)
 {
 	double	res;
-	size_t	i;
+	unsigned long	i;
 
 	if (x > 1.0)
 		return (HPI - ft_atan(1.0 / x));

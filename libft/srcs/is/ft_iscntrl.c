@@ -6,13 +6,11 @@
 /*   By: abidolet <abidolet@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/31 20:26:45 by abidolet          #+#    #+#             */
-/*   Updated: 2025/05/31 20:31:21 by abidolet         ###   ########.fr       */
+/*   Updated: 2025/07/04 23:47:28 by abidolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdbool.h>
-
-bool	ft_iscntrl(int c)
+int	ft_iscntrl(int c)
 {
 	return ((c >= 0 && c <= 31) || c == 127);
 }

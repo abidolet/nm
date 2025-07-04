@@ -6,11 +6,9 @@
 /*   By: abidolet <abidolet@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 16:38:19 by abidolet          #+#    #+#             */
-/*   Updated: 2025/07/02 16:39:30 by abidolet         ###   ########.fr       */
+/*   Updated: 2025/07/04 23:30:12 by abidolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#include <stddef.h>
 
 int	ft_strcmp(const char *s1, const char *s2)
 {

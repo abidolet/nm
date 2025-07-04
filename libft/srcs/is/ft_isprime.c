@@ -6,17 +6,16 @@
 /*   By: abidolet <abidolet@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 00:35:27 by abidolet          #+#    #+#             */
-/*   Updated: 2025/05/11 10:00:41 by abidolet         ###   ########.fr       */
+/*   Updated: 2025/07/04 23:47:38 by abidolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdbool.h>
 #include "libft/math.h"
 
-bool	ft_isprime(size_t n)
+int	ft_isprime(unsigned long n)
 {
-	const size_t	max_divisor = ft_sqrt(n) + 1;
-	size_t			i;
+	const unsigned long	max_divisor = ft_sqrt(n) + 1;
+	unsigned long		i;
 
 	if (n % 2 == 0 || n < 2)
 		return (n == 2);

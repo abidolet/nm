@@ -6,13 +6,11 @@
 /*   By: abidolet <abidolet@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/31 20:34:53 by abidolet          #+#    #+#             */
-/*   Updated: 2025/05/31 20:35:29 by abidolet         ###   ########.fr       */
+/*   Updated: 2025/07/04 23:47:46 by abidolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdbool.h>
-
-bool	ft_isxdigit(int c)
+int	ft_isxdigit(int c)
 {
 	return ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f')
 		|| (c >= 'A' && c <= 'F'));

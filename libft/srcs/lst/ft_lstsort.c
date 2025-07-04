@@ -6,12 +6,11 @@
 /*   By: abidolet <abidolet@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 01:00:17 by abidolet          #+#    #+#             */
-/*   Updated: 2025/07/03 21:12:14 by abidolet         ###   ########.fr       */
+/*   Updated: 2025/07/05 01:24:01 by abidolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft/lst.h"
-#include <stddef.h>
 
 t_list	*ft_lstsort(t_list *lst, int (*cmp)(void *, void *))
 {
@@ -21,7 +20,7 @@ t_list	*ft_lstsort(t_list *lst, int (*cmp)(void *, void *))
 
 	if (!lst || !cmp)
 		return (lst);
-	res = NULL;
+	res = 0x0;
 	while (lst)
 	{
 		current = lst;

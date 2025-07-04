@@ -6,13 +6,11 @@
 /*   By: abidolet <abidolet@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 01:09:29 by abidolet          #+#    #+#             */
-/*   Updated: 2025/05/11 09:59:14 by abidolet         ###   ########.fr       */
+/*   Updated: 2025/07/04 23:47:36 by abidolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdbool.h>
-
-bool	ft_islower(int c)
+int	ft_islower(int c)
 {
 	return (c >= 'a' && c <= 'z');
 }

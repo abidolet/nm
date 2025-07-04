@@ -6,12 +6,11 @@
 /*   By: abidolet <abidolet@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 00:02:47 by abidolet          #+#    #+#             */
-/*   Updated: 2025/07/04 00:18:35 by abidolet         ###   ########.fr       */
+/*   Updated: 2025/07/04 23:29:41 by abidolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft/lst.h"
-#include <stddef.h>
 #include <stdlib.h>
 
 void	ft_lstremove_if(t_list **lst, void *data_ref, int (*cmp)(),

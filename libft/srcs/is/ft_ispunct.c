@@ -6,13 +6,11 @@
 /*   By: abidolet <abidolet@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/31 20:29:40 by abidolet          #+#    #+#             */
-/*   Updated: 2025/05/31 20:31:36 by abidolet         ###   ########.fr       */
+/*   Updated: 2025/07/04 23:47:42 by abidolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdbool.h>
-
-bool	ft_ispunct(int c)
+int	ft_ispunct(int c)
 {
 	return ((c >= 33 && c <= 47) || (c >= 58 && c <= 64) || (c >= 91 && c <= 96)
 		|| (c >= 123 && c <= 126));

@@ -14,9 +14,9 @@
 
 char	*ft_itoa(int n)
 {
-	long	nb;
-	size_t	size;
-	char	*res;
+	long			nb;
+	unsigned long	size;
+	char			*res;
 
 	nb = n;
 	size = (n <= 0);

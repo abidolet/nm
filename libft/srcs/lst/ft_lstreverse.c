@@ -6,12 +6,11 @@
 /*   By: abidolet <abidolet@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 23:40:52 by abidolet          #+#    #+#             */
-/*   Updated: 2025/07/04 00:08:40 by abidolet         ###   ########.fr       */
+/*   Updated: 2025/07/05 01:24:01 by abidolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft/lst.h"
-#include <stddef.h>
 
 void	ft_lstreverse(t_list **lst)
 {
@@ -21,9 +20,9 @@ void	ft_lstreverse(t_list **lst)
 
 	if (lst && *lst)
 	{
-		prev = NULL;
+		prev = (0x0);
 		current = *lst;
-		while (current != NULL)
+		while (current != (0x0))
 		{
 			next = current->next;
 			current->next = prev;

@@ -6,13 +6,11 @@
 /*   By: abidolet <abidolet@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 20:16:55 by abidolet          #+#    #+#             */
-/*   Updated: 2025/05/11 09:58:54 by abidolet         ###   ########.fr       */
+/*   Updated: 2025/07/04 23:47:22 by abidolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdbool.h>
-
-bool	ft_isalpha(int c)
+int	ft_isalpha(int c)
 {
 	return (('A' <= c && c <= 'Z') || ('a' <= c && c <= 'z'));
 }

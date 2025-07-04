@@ -6,13 +6,11 @@
 /*   By: abidolet <abidolet@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 01:09:32 by abidolet          #+#    #+#             */
-/*   Updated: 2025/05/11 10:05:40 by abidolet         ###   ########.fr       */
+/*   Updated: 2025/07/04 23:47:44 by abidolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdbool.h>
-
-bool	ft_isupper(int c)
+int	ft_isupper(int c)
 {
 	return (c >= 'A' && c <= 'Z');
 }

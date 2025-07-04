@@ -10,13 +10,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stddef.h>
-
 char	*ft_strrchr(const char *s, int c)
 {
 	char	*res;
 
-	res = NULL;
+	res = 0x0;
 	while (s && *s)
 		if (*s++ == (char)c)
 			res = (char *)(s - 1);

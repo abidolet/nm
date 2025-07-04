@@ -10,15 +10,13 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stddef.h>
-
-char	*ft_strnstr(const char *haystack, const char *needle, size_t len)
+char	*ft_strnstr(const char *haystack, const char *needle, unsigned long len)
 {
-	size_t	i;
-	size_t	j;
+	unsigned long	i;
+	unsigned long	j;
 
 	if (!haystack || !needle)
-		return (NULL);
+		return ((0x0));
 	else if (!*needle)
 		return ((char *)haystack);
 	i = -1;
@@ -30,5 +28,5 @@ char	*ft_strnstr(const char *haystack, const char *needle, size_t len)
 		if (!needle[j])
 			return ((char *)(haystack + i));
 	}
-	return (NULL);
+	return ((0x0));
 }

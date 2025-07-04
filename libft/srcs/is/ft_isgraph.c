@@ -6,13 +6,11 @@
 /*   By: abidolet <abidolet@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/31 20:28:31 by abidolet          #+#    #+#             */
-/*   Updated: 2025/05/31 20:31:30 by abidolet         ###   ########.fr       */
+/*   Updated: 2025/07/04 23:47:31 by abidolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdbool.h>
-
-bool	ft_isgraph(int c)
+int	ft_isgraph(int c)
 {
 	return ((c >= 33 && c <= 126));
 }

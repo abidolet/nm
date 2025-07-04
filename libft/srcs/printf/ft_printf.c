@@ -6,7 +6,7 @@
 /*   By: abidolet <abidolet@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/22 00:38:45 by abidolet          #+#    #+#             */
-/*   Updated: 2025/07/02 15:47:48 by abidolet         ###   ########.fr       */
+/*   Updated: 2025/07/04 23:33:06 by abidolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,11 +27,11 @@ int	puthex_len(unsigned long long n)
 
 static int	puthex_flags(unsigned int n, char c, int fd, t_flags *flags)
 {
-	size_t	res;
-	size_t	num_len;
-	size_t	precision_len;
-	size_t	total_len;
-	size_t	padding;
+	unsigned long	res;
+	unsigned long	num_len;
+	unsigned long	precision_len;
+	unsigned long	total_len;
+	unsigned long	padding;
 
 	res = 0;
 	if (n == 0 && flags->dot && flags->precision == 0)
@@ -68,7 +68,7 @@ static int	puthex_flags(unsigned int n, char c, int fd, t_flags *flags)
 	return (res);
 }
 
-static size_t	nbrlen(long n)
+static unsigned long	nbrlen(long n)
 {
 	if (n < 0)
 		return (1 + nbrlen(-n));
@@ -81,11 +81,11 @@ static size_t	nbrlen(long n)
 static int	putnbr_flags(long n, int fd, t_flags *flags)
 {
 	int		res;
-	size_t	num_len;
-	size_t	total_len;
-	bool	sign_len;
-	size_t	padding_needed;
-	size_t	i;
+	unsigned long	num_len;
+	unsigned long	total_len;
+	_Bool	sign_len;
+	unsigned long	padding_needed;
+	unsigned long	i;
 
 	res = 0;
 	num_len = nbrlen(n);
@@ -157,8 +157,8 @@ static int	putnbr_flags(long n, int fd, t_flags *flags)
 
 static int	putstr_flags(char *s, int fd, t_flags *flags)
 {
-	size_t	res;
-	size_t	tmp;
+	unsigned long	res;
+	unsigned long	tmp;
 
 	res = 0;
 	tmp = 0;
@@ -183,7 +183,7 @@ static int	putstr_flags(char *s, int fd, t_flags *flags)
 
 static int	putchar_flags(int c, int fd, t_flags *flags)
 {
-	size_t	res;
+	unsigned long	res;
 
 	res = 0;
 	if (!flags->minus)
@@ -198,8 +198,8 @@ static int	putchar_flags(int c, int fd, t_flags *flags)
 
 static int	putptr_flags(void *ptr, int fd, t_flags *flags)
 {
-	size_t	res;
-	size_t	tmp;
+	unsigned long	res;
+	unsigned long	tmp;
 
 	res = 0;
 	tmp = puthex_len((unsigned long long)ptr) + 2;
@@ -241,21 +241,21 @@ static char	*parse_flags(char *s, t_flags *flags)
 	while (*s)
 	{
 		if (*s == '-')
-			flags->minus = true;
+			flags->minus = TRUE;
 		else if (*s == '0')
-			flags->zero = true;
+			flags->zero = TRUE;
 		else if (*s == '.')
 		{
-			flags->dot = true;
+			flags->dot = TRUE;
 			flags->precision = ft_strtoi(++s, &s, 10);
 			continue ;
 		}
 		else if (*s == '#')
-			flags->hash = true;
+			flags->hash = TRUE;
 		else if (*s == ' ')
-			flags->space = true;
+			flags->space = TRUE;
 		else if (*s == '+')
-			flags->plus = true;
+			flags->plus = TRUE;
 		else if (ft_isdigit(*s))
 		{
 			flags->width = ft_strtoi(s, &s, 10);

@@ -6,13 +6,11 @@
 /*   By: abidolet <abidolet@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/31 20:37:11 by abidolet          #+#    #+#             */
-/*   Updated: 2025/05/31 21:52:51 by abidolet         ###   ########.fr       */
+/*   Updated: 2025/07/04 23:47:24 by abidolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdbool.h>
-
-bool	ft_isblank(int c)
+int	ft_isblank(int c)
 {
 	return (c == ' ' || c == '\t');
 }

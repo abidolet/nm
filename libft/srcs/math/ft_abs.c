@@ -6,11 +6,9 @@
 /*   By: abidolet <abidolet@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 23:54:27 by abidolet          #+#    #+#             */
-/*   Updated: 2025/05/10 19:48:37 by abidolet         ###   ########.fr       */
+/*   Updated: 2025/07/04 23:29:49 by abidolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#include <stddef.h>
 
 double	ft_abs(double n)
 {

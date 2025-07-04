@@ -15,8 +15,8 @@
 static char	*find_newline(const int fd, char *buffer, char **line,
 	char *newline)
 {
-	ssize_t	bytes_read;
-	char	*tmp;
+	long long		bytes_read;
+	char			*tmp;
 
 	while (!newline)
 	{
