@@ -1,11 +1,7 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 #include "libft/ft_printf.h"
-#include "libft/str.h"
-#include "libft/mem.h"
-#include "libft/to.h"
-#include "libft/bool.h"
-#include "libft/color.h"
+#include "libft.h"
 #include <sys/stat.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,9 +11,9 @@
 #include <ar.h>
 #include <errno.h>
 
-#define FREE(ptr) free(ptr); ptr = NULL;
-#define CLOSE(fd) if (fd > 2) close(fd), fd = -1;
-#define INFO __FILE__, __LINE__, __func__
+#define FREE(ptr)	free(ptr); ptr = NULL;
+#define CLOSE(fd)	if (fd > 2) close(fd), fd = -1;
+#define INFO		__FILE__, __LINE__, __func__
 
 typedef struct	data
 {
@@ -59,35 +55,46 @@ void	check_mem(const char *file, const int line, const char *func, void *mem, vo
 	*res = mem;
 }
 
-char	get_symbol_type(Elf64_Sym *sym, Elf64_Shdr *shdr, char *strtab)
+char get_symbol_type(Elf64_Sym *sym, Elf64_Shdr *shdr, char *strtab)
 {
-	unsigned char	bind = ELF64_ST_BIND(sym->st_info);
-	unsigned char	type = ELF64_ST_TYPE(sym->st_info);
+	unsigned char bind = ELF64_ST_BIND(sym->st_info);
+	unsigned char type = ELF64_ST_TYPE(sym->st_info);
+	const char *name = sym->st_name != 0 ? &strtab[sym->st_name] : "";
 
-	if (sym->st_name != 0 && !ft_strcmp(&strtab[sym->st_name], "data_start"))
+	if (sym->st_name != 0 && !ft_strcmp(name, "data_start"))
 	{
 		return ('W');
 	}
 
-	if (sym->st_shndx == SHN_UNDEF && bind == STB_GLOBAL) return 'U';
+	if (sym->st_shndx == SHN_UNDEF)
+	{
+		if (bind == STB_GLOBAL) return 'U';
+		if (bind == STB_WEAK) return 'w';
+	}
+
 	if (sym->st_shndx == SHN_ABS) return bind == STB_GLOBAL ? 'A' : 'a';
 	if (sym->st_shndx == SHN_COMMON) return 'C';
 
+	if (sym->st_name != 0 &&
+		(ft_strnstr(name, "_ZGV", -1) == name ||
+		ft_strnstr(name, "_ZZ", -1) == name ||
+		!ft_strcmp(name, "_ZSt19piecewise_construct")))
+	{
+		return 'u';
+	}
+
 	if (bind == STB_WEAK)
 	{
+		if (sym->st_shndx == SHN_UNDEF) return 'w';
 		if (type == STT_OBJECT)
-		{
-			return (bind == STB_GLOBAL ? 'V' : 'v');
-		}
+			return sym->st_value != 0 ? 'V' : 'v';
 		else
-		{
-			return (bind == STB_GLOBAL ? 'W' : 'w');
-		}
+			return sym->st_value != 0 ? 'W' : 'w';
 	}
 
 	if (sym->st_shndx < SHN_LORESERVE)
 	{
-		Elf64_Shdr	*sec = &shdr[sym->st_shndx];
+		Elf64_Shdr *sec = &shdr[sym->st_shndx];
 
 		if (sec->sh_flags & SHF_EXECINSTR) return bind == STB_GLOBAL ? 'T' : 't';
 		if (sec->sh_type == SHT_NOBITS) return bind == STB_GLOBAL ? 'B' : 'b';
@@ -112,8 +119,8 @@ void	free_line(void *content)
 
 int	sort_line(void *content1, void *content2)
 {
-	char	**line1 = (char **)content1;
-	char	**line2 = (char **)content2;
+	char **line1 = (char **)content1;
+	char **line2 = (char **)content2;
 
 	int	name_cmp = ft_strcmp(line1[2], line2[2]);
 	if (name_cmp != 0)
@@ -121,9 +128,15 @@ int	sort_line(void *content1, void *content2)
 		return (name_cmp);
 	}
 
+	int	type_cmp = ft_strcmp(line1[1], line2[1]);
+	if (type_cmp != 0)
+	{
+		return (-type_cmp);
+	}
+
 	unsigned long	addr1 = strtoul(line1[0], NULL, 16);
 	unsigned long	addr2 = strtoul(line2[0], NULL, 16);
-	return (addr1 < addr2);
+	return (addr1 > addr2);
 }
 
 void	print_options(const int fd, t_data *data)
@@ -145,73 +158,98 @@ void	print_options(const int fd, t_data *data)
 	{
 		ft_printf("Report bugs to <abidolet@student.42lyon.fr>.\n");
 	}
+
 	data->exit_code = (fd == 2);
 	free_all(data);
 }
 
-void	parse_flags(const int ac, char **av, t_data *data)
+typedef enum e_options
+{
+	DEBUG_SYMS,
+	EXTERN_ONLY,
+	NO_SORT,
+	REVERSE_SORT,
+	UNDEF_ONLY,
+	HELP,
+	INVALID
+}	t_options;
+
+static t_options	get_option_enum(const char *opt_str)
+{
+	const struct {
+		const char *name;
+		t_options opt;
+	}
+
+	option_map[] = {
+		{"debug-syms", DEBUG_SYMS},
+		{"extern-only", EXTERN_ONLY},
+		{"no-sort", NO_SORT},
+		{"reverse-sort", REVERSE_SORT},
+		{"undefined-only", UNDEF_ONLY},
+		{"help", HELP},
+	};
+
+	for (int i = 0; option_map[i].name; i++)
+	{
+		if (ft_strcmp(opt_str, option_map[i].name) == 0)
+		{
+			return (option_map[i].opt);
+		}
+	}
+	return (INVALID);
+}
+
+static void	parse_options(char *arg, t_data *data)
+{
+	char	*option;
+
+	if (arg[1] != '-')
+	{
+		option = arg + 1;
+		while (*option)
+		{
+			switch (*option)
+			{
+				case 'a':	data->a = TRUE; break ;
+				case 'e':	break ;
+				case 'g':	data->g = TRUE; break ;
+				case 'p':	data->p = TRUE; break ;
+				case 'r':	data->r = TRUE; break ;
+				case 'u':	data->u = TRUE; break ;
+				case 'h':	print_options(1, data); break ;
+				default:	ft_dprintf(2, "ft_nm: invalid option -- '%c'\n", *option);
+								print_options(2, data);
+			}
+			option++;
+		}
+	}
+	else
+	{
+		option = arg + 2;
+		switch (get_option_enum(option))
+		{
+			case DEBUG_SYMS:	data->a = TRUE; break ;
+			case EXTERN_ONLY:	data->g = TRUE; break ;
+			case NO_SORT:		data->p = TRUE; break ;
+			case REVERSE_SORT:	data->r = TRUE; break ;
+			case UNDEF_ONLY:	data->u = TRUE; break ;
+			case HELP:			print_options(1, data); break ;
+			default:			ft_dprintf(2, "ft_nm: unrecognized option '--%s'\n", option);
+									print_options(2, data);
+		}
+	}
+}
+
+void	parse_data(const int ac, char **av, t_data *data)
 {
 	t_list	*new_node = NULL;
-	char	*option;
 
 	for (int i = 1; i < ac; i++)
 	{
 		if (*av[i] == '-')
 		{
-			if (av[i][1] != '-')
-			{
-				option = av[i] + 1;
-
-				while (*option)
-				{
-					switch (*option)
-					{
-						case 'a':	data->a = TRUE; break ;
-						case 'e':	break ;
-						case 'g':	data->g = TRUE; break ;
-						case 'p':	data->p = TRUE; break ;
-						case 'r':	data->r = TRUE; break ;
-						case 'u':	data->u = TRUE; break ;
-						case 'h':	print_options(1, data); break ;
-						default:	ft_dprintf(2, "ft_nm: invalid option -- '%c'\n", *option); print_options(2, data);
-					}
-					option++;
-				}
-			}
-			else
-			{
-				option = av[i] + 2;
-
-				if (ft_strcmp(option, "debug-syms") == 0)
-				{
-					data->a = TRUE;
-				}
-				else if (ft_strcmp(option, "extern-only") == 0)
-				{
-					data->g = TRUE;
-				}
-				else if (ft_strcmp(option, "no-sort") == 0)
-				{
-					data->p = TRUE;
-				}
-				else if (ft_strcmp(option, "reverse-sort") == 0)
-				{
-					data->r = TRUE;
-				}
-				else if (ft_strcmp(option, "undefined-only") == 0)
-				{
-					data->u = TRUE;
-				}
-				else if (ft_strcmp(option, "help") == 0)
-				{
-					print_options(1, data);
-				}
-				else
-				{
-					ft_dprintf(2, "ft_nm: unrecognized option '--%s'\n", option);
-					print_options(2, data);
-				}
-			}
+			parse_options(av[i], data);
 		}
 		else
 		{
@@ -251,14 +289,130 @@ int	is_global_symbol(void *content, void *ref)
 	char	**line = (char **)content;
 
 	(void)ref;
-	return (!(*line[1] == 't' || *line[1] == 'd' || *line[1] == 'b' || *line[1] == 'r'));
+	return (!(*line[1] == 't' || *line[1] == 'd' || *line[1] == 'b' || *line[1] == 'r'|| *line[1] == 'a'));
+}
+
+int	reverse_sort_line(void *content1, void *content2)
+{
+	char	**line1 = (char **)content1;
+	char	**line2 = (char **)content2;
+
+	if (ft_strcmp(line1[2], line2[2]) == 0)
+	{
+		return (sort_line(content1, content2));
+	}
+
+	return (-sort_line(content1, content2));
+}
+
+static void	handle_options(t_data *data, t_list **lst)
+{
+	if (data->u)
+	{
+		ft_lstremove_if(lst, NULL, is_undefined_symbol, free_line);
+	}
+	else if (data->g)
+	{
+		ft_lstremove_if(lst, NULL, is_global_symbol, free_line);
+	}
+
+	if (!data->p)
+	{
+		if (data->r)
+		{
+			*lst = ft_lstsort(*lst, reverse_sort_line);
+		}
+		else
+		{
+			*lst = ft_lstsort(*lst, sort_line);
+		}
+	}
+}
+
+static void	handle_open_failed(const char *file, t_data *data)
+{
+	data->exit_code = 1;
+	data->files = data->files->next;
+	if (errno == ENOENT)
+	{
+		ft_dprintf(2, "ft_nm: '%s': No such file\n", file);
+	}
+	else if (errno == EACCES)
+	{
+		ft_dprintf(2, "ft_nm: %s: Permission denied\n", file);
+	}
+	else
+	{
+		perror("open failed");
+		free_all(data);
+	}
+}
+
+static void	get_symbols(void *map, Elf64_Ehdr *ehdr, t_data *data, t_list **lst)
+{
+	Elf64_Shdr	*shdr = (Elf64_Shdr *)((char *)map + ehdr->e_shoff);
+
+	for (int i = 0; i < ehdr->e_shnum; i++)
+	{
+		if (shdr[i].sh_type == SHT_SYMTAB)
+		{
+			Elf64_Sym	*symtab = (Elf64_Sym *)((char *)map + shdr[i].sh_offset);
+			int			symcount = shdr[i].sh_size / sizeof(Elf64_Sym);
+
+			for (int j = 0; j < symcount; j++)
+			{
+				check_mem(INFO, ft_calloc(4, sizeof(char *)), (void **)&data->line, data);
+				check_mem(INFO, ft_calloc(17, sizeof(char)), (void **)&data->line[0], data);
+				check_mem(INFO, ft_calloc(2, sizeof(char)), (void **)&data->line[1], data);
+
+				Elf64_Sym	*sym = &symtab[j];
+				char		*strtab = (char *)map + shdr[shdr[i].sh_link].sh_offset;
+
+				{
+					snprintf(data->line[0], 17, "%016lx", symtab[j].st_value);
+				}
+
+				{
+					*data->line[1] = get_symbol_type(&symtab[j], shdr, strtab);
+					if (!ft_strcmp(data->line[0], "0000000000000000")
+						&& !(data->a && *data->line[1] == 'a'))
+					{
+						if (*data->line[1] == 'a' || *data->line[1] == 'A'
+							|| *data->line[1] == 'r' || *data->line[1] == '?')
+						{
+							free_line(data->line);
+							continue ;
+						}
+						else if (*data->line[1] != 'T' && *data->line[1] != 't'
+							&& *data->line[1] != 'b')
+						{
+							ft_memset(data->line[0], ' ', 16);
+						}
+					}
+				}
+
+				{
+					if (!data->a && strtab[sym->st_name] == 0)
+					{
+						free_line(data->line);
+						continue ;
+					}
+					check_mem(INFO, ft_strdup(&strtab[sym->st_name]), (void **)&data->line[2], data);
+				}
+
+				t_list	*new_node = NULL;
+				check_mem(INFO, ft_lstnew(data->line), (void **)&new_node, data);
+				ft_lstadd_back(lst, new_node);
+			}
+		}
+	}
 }
 
 int	main(int ac, char **av)
 {
 	struct data	data;
 	ft_bzero(&data, sizeof(data));
-	parse_flags(ac, av, &data);
+	parse_data(ac, av, &data);
 	// print_flags(&data);
 
 	t_list	*tmp = data.files;
@@ -269,21 +423,7 @@ int	main(int ac, char **av)
 		data.fd = open(file, O_RDONLY);
 		if (data.fd < 0)
 		{
-			data.exit_code = 1;
-			if (errno == ENOENT)
-			{
-				ft_dprintf(2, "ft_nm: '%s': No such file\n", file);
-			}
-			else if (errno == EACCES)
-			{
-				ft_dprintf(2, "ft_nm: %s: Permission denied\n", file);
-			}
-			else
-			{
-				perror("open failed");
-				free_all(&data);
-			}
-			data.files = data.files->next;
+			handle_open_failed(file, &data);
 			continue ;
 		}
 
@@ -326,80 +466,11 @@ int	main(int ac, char **av)
 			ft_printf("\n%s:\n", file);
 		}
 
-		Elf64_Shdr	*shdr = (Elf64_Shdr *)((char *)map + ehdr->e_shoff);
-		t_list		*lst = NULL;
-
-		for (int i = 0; i < ehdr->e_shnum; i++)
-		{
-			if (shdr[i].sh_type == SHT_SYMTAB)
-			{
-				Elf64_Sym	*symtab = (Elf64_Sym *)((char *)map + shdr[i].sh_offset);
-				int			symcount = shdr[i].sh_size / sizeof(Elf64_Sym);
-
-				for (int j = 0; j < symcount; j++)
-				{
-					check_mem(INFO, ft_calloc(4, sizeof(char *)), (void **)&data.line, &data);
-					check_mem(INFO, ft_calloc(17, sizeof(char)), (void **)&data.line[0], &data);
-					check_mem(INFO, ft_calloc(2, sizeof(char)), (void **)&data.line[1], &data);
-
-					Elf64_Sym	*sym = &symtab[j];
-					char		*strtab = (char *)map + shdr[shdr[i].sh_link].sh_offset;
-
-					{
-						snprintf(data.line[0], 17, "%016lx", symtab[j].st_value);
-					}
-
-					{
-						*data.line[1] = get_symbol_type(&symtab[j], shdr, strtab);
-						if (!ft_strcmp(data.line[0], "0000000000000000") && !(data.a && *data.line[1] == 'a'))
-						{
-							if (*data.line[1] == 'a' || *data.line[1] == 'A' || *data.line[1] == 't' || *data.line[1] == 'r' || *data.line[1] == '?')
-							{
-								free_line(data.line);
-								continue ;
-							}
-							if (*data.line[1] != 'T')
-							{
-								ft_memset(data.line[0], ' ', 16);
-							}
-						}
-					}
-
-					{
-						check_mem(INFO, ft_strdup(&strtab[sym->st_name]), (void **)&data.line[2], &data);
-					}
-
-					t_list	*new_node = NULL;
-					check_mem(INFO, ft_lstnew(data.line), (void **)&new_node, &data);
-					ft_lstadd_back(&lst, new_node);
-				}
-			}
-		}
-
-		if (!data.a)
-		{
-			if (data.u)
-			{
-				ft_lstremove_if(&lst, NULL, is_undefined_symbol, free_line);
-			}
-			else if (data.g)
-			{
-				ft_lstremove_if(&lst, NULL, is_global_symbol, free_line);
-			}
-		}
-
-		if (!data.p)
-		{
-			lst = ft_lstsort(lst, sort_line);
-			if (data.r)
-			{
-				ft_lstreverse(&lst);
-			}
-		}
-
+		t_list	*lst = NULL;
+		get_symbols(map, ehdr, &data, &lst);
+		handle_options(&data, &lst);
 		ft_lstiter(lst, print_line);
 		ft_lstclear(&lst, free_line);
-
 		munmap(map, st.st_size);
 		data.files = data.files->next;
 	}

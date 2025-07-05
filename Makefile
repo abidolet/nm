@@ -1,14 +1,13 @@
 NAME = ft_nm
 MODE ?= release
 
-OBJ_DIR = .bin-$(MODE)
+BIN_DIR = .bin-$(MODE)
 INCLUDES = -Iincludes -Ilibft/includes
 
 CC = cc
-CFLAGS = -Wall -Werror -Wextra -MD $(INCLUDES) -g3
+CFLAGS = -Wall -Werror -Wextra -MD $(INCLUDES)
 
 ifeq ($(MODE), debug)
-	CC = cc
 	CFLAGS = -Wall -Wextra -MD $(INCLUDES) -g3
 endif
 
@@ -16,7 +15,7 @@ VPATH = srcs
 
 SRCS =	main.c	\
 
-OBJS = $(addprefix $(OBJ_DIR)/, $(SRCS:.c=.o))
+OBJS = $(addprefix $(BIN_DIR)/, $(SRCS:.c=.o))
 DEPS = $(OBJS:.o=.d)
 BIN = $(NAME)
 
@@ -33,21 +32,21 @@ all:
 	printf "$(RESET)"
 
 libft:
-	printf "Compiling libft...\n"
-	$(MAKE) -C libft > /dev/null
+	$(MAKE) -C libft
 
 debug:
+	$(MAKE) -C libft debug
 	$(MAKE) MODE=debug all
 
-$(OBJ_DIR):
-	mkdir -p $(OBJ_DIR)
+$(BIN_DIR):
+	mkdir -p $(BIN_DIR)
 
 $(BIN): $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) libft/libft.a -o $@
 
-$(OBJ_DIR)/%.o: %.c Makefile |  $(OBJ_DIR)
+$(BIN_DIR)/%.o: %.c Makefile | $(BIN_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
-	printf "$(GRAY)compiling: $(BLUE)%-40s $(GRAY)[%d/%d]\n" "$<" "$$(ls $(OBJ_DIR) | grep -c '\.o')" "$(words $(SRCS))"
+	printf "$(GRAY)compiling: $(BLUE)%-40s $(GRAY)[%d/%d]\n" "$<" "$$(ls $(BIN_DIR) | grep -c '\.o')" "$(words $(SRCS))"
 
 clean:
 	$(MAKE) -C libft clean
@@ -55,7 +54,7 @@ clean:
 
 fclean:
 	$(MAKE) -C libft fclean
-	rm -rf .bin-*
+	rm -rf .bin-release .bin-debug
 	rm -f $(NAME)
 
 re: fclean all

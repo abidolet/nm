@@ -1,11 +1,17 @@
 NAME = libft.a
+MODE ?= release
+
+BIN_DIR = .bin-$(MODE)
+INCLUDES = -Iincludes
 
 CC = cc
-CFLAGS = -Wall -Werror -Wextra -Iincludes -MD -g3
+CFLAGS = -Wall -Werror -Wextra -Iincludes -MD $(INCLUDES)
+
+ifeq ($(MODE), debug)
+	CFLAGS += -g3
+endif
 
 VPATH = srcs:srcs/is:srcs/mem:srcs/str:srcs/to:srcs/lst:srcs/math:srcs/algo:srcs/printf:srcs/gnl
-
-BIN_DIR = .bin
 
 SRCS_ALGO =	ft_sort_int_tab.c	\
 			ft_swap.c			\
@@ -105,11 +111,13 @@ SRCS =	$(SRCS_ALGO)	\
 		$(SRCS_STR)		\
 		$(SRCS_TO)		\
 
-
 OBJS = $(addprefix $(BIN_DIR)/, $(SRCS:.c=.o))
 DEPS = $(OBJS:.o=.d)
 
 all: $(BIN_DIR) $(NAME)
+
+debug:
+	$(MAKE) MODE=debug
 
 $(BIN_DIR):
 		mkdir -p $(BIN_DIR)
@@ -121,7 +129,7 @@ $(BIN_DIR)/%.o: %.c Makefile | $(BIN_DIR)
 		$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-		rm -rf $(BIN_DIR)
+		rm -rf .bin-release .bin-debug
 
 fclean: clean
 		rm -f $(NAME)
@@ -131,3 +139,6 @@ re: fclean all
 .PHONY: all clean fclean re
 
 -include $(DEPS)
+
+.SILENT:
+MAKEFLAGS=--no-print-directory
