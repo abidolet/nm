@@ -15,8 +15,8 @@
 
 char	*ft_strjoin(char const *s1, char const *s2)
 {
-	char			*res;
-	unsigned long	size;
+	char	*res;
+	size_t	size;
 
 	if (!s1)
 		return (ft_strdup(s2));

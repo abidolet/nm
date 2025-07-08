@@ -15,8 +15,8 @@
 static char	*find_newline(const int fd, char *buffer, char **line,
 	char *newline)
 {
-	long long		bytes_read;
-	char			*tmp;
+	ssize_t	bytes_read;
+	char	*tmp;
 
 	while (!newline)
 	{
@@ -49,7 +49,11 @@ char	*get_next_line(int fd)
 		return (NULL);
 	line = NULL;
 	if (buffer[fd][0])
+	{
 		line = ft_strdup(buffer[fd]);
+		if (!line)
+			return (NULL);
+	}
 	newline = find_newline(fd, buffer[fd], &line, ft_strchr(line, '\n'));
 	if (newline)
 	{

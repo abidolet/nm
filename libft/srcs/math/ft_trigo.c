@@ -6,7 +6,7 @@
 /*   By: abidolet <abidolet@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/11 10:22:40 by abidolet          #+#    #+#             */
-/*   Updated: 2025/07/04 23:22:10 by abidolet         ###   ########.fr       */
+/*   Updated: 2025/07/06 16:35:30 by abidolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,7 +159,7 @@ double	ft_asin(double x)
 	return (ft_atan(x / ft_sqrt(1 - x * x)));
 }
 
-double	ft_acos(double x)
+double	ft_argcos(double x)
 {
 	if (x < -1.0 || x > 1.0)
 		return (0.0 / 0.0);

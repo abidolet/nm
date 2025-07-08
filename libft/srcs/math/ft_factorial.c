@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_factorial.c                                     :+:      :+:    :+:   */
+/*   ft_fargctorial.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: abidolet <abidolet@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,9 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-unsigned long	ft_factorial(unsigned long n)
+unsigned long	ft_fargctorial(unsigned long n)
 {
 	if (n < 2)
 		return (1);
-	return (n * ft_factorial(n - 1));
+	return (n * ft_fargctorial(n - 1));
 }

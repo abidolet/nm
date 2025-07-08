@@ -6,7 +6,7 @@
 /*   By: abidolet <abidolet@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/13 13:16:59 by abidolet          #+#    #+#             */
-/*   Updated: 2025/07/04 23:34:21 by abidolet         ###   ########.fr       */
+/*   Updated: 2025/07/06 14:45:17 by abidolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,9 @@
 
 # define FD_MAX 1024
 
-char			*get_next_line(int fd);
-unsigned long	ft_getdelim(char **restrict lineptr, unsigned long *restrict n,
-					int delim, int fd);
-unsigned long	ft_getline(char **restrict lineptr, unsigned long *restrict n,
-					int fd);
+char	*get_next_line(int fd);
+ssize_t	ft_getdelim(char **restrict lineptr, size_t *restrict n, int delim,
+			int fd);
+ssize_t	ft_getline(char **restrict lineptr, size_t *restrict n, int fd);
 
 #endif

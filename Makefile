@@ -14,6 +14,9 @@ endif
 VPATH = srcs
 
 SRCS =	main.c	\
+		utils.c	\
+		parse.c	\
+		run.c	\
 
 OBJS = $(addprefix $(BIN_DIR)/, $(SRCS:.c=.o))
 DEPS = $(OBJS:.o=.d)
@@ -35,6 +38,7 @@ libft:
 	$(MAKE) -C libft
 
 debug:
+	$(MAKE) clean
 	$(MAKE) -C libft debug
 	$(MAKE) MODE=debug all
 

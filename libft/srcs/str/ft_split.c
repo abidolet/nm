@@ -13,9 +13,9 @@
 #include <stdlib.h>
 #include "libft/str.h"
 
-static unsigned int	count_words(const char *s, char c)
+static size_t	count_words(const char *s, char c)
 {
-	unsigned int	res;
+	size_t	res;
 
 	res = 0;
 	while (*s)
@@ -31,7 +31,7 @@ static unsigned int	count_words(const char *s, char c)
 
 void	*free_arr(void **arr)
 {
-	unsigned int	i;
+	size_t	i;
 
 	if (arr)
 	{
@@ -46,9 +46,9 @@ void	*free_arr(void **arr)
 
 char	**ft_split(const char *s, char c)
 {
-	char			**res;
-	unsigned int	i;
-	const char		*tmp;
+	char		**res;
+	size_t		i;
+	const char	*tmp;
 
 	if (!s)
 		return (NULL);

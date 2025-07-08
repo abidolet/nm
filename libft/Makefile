@@ -11,6 +11,11 @@ ifeq ($(MODE), debug)
 	CFLAGS += -g3
 endif
 
+ifeq ($(MODE), x86_32)
+	CC = gcc
+	CFLAGS = -MD $(INCLUDES) -m32
+endif
+
 VPATH = srcs:srcs/is:srcs/mem:srcs/str:srcs/to:srcs/lst:srcs/math:srcs/algo:srcs/printf:srcs/gnl
 
 SRCS_ALGO =	ft_sort_int_tab.c	\
@@ -118,6 +123,9 @@ all: $(BIN_DIR) $(NAME)
 
 debug:
 	$(MAKE) MODE=debug
+
+32:
+	$(MAKE) MODE=x86_32
 
 $(BIN_DIR):
 		mkdir -p $(BIN_DIR)

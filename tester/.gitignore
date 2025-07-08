@@ -1,0 +1,10 @@
+*
+!object_files
+!so
+!x64
+!x64/*
+!x86_32
+!*.o
+!*.so
+!.gitignore
+!tester.sh

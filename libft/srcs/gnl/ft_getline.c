@@ -6,18 +6,18 @@
 /*   By: abidolet <abidolet@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/31 15:33:55 by abidolet          #+#    #+#             */
-/*   Updated: 2025/07/04 23:28:15 by abidolet         ###   ########.fr       */
+/*   Updated: 2025/07/06 14:45:35 by abidolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
 #include "libft/get_next_line.h"
 
-static unsigned long	process_result(char *delim_ptr, char *line,
+static ssize_t	process_result(char *delim_ptr, char *line,
 	char *buffer, char **restrict lineptr)
 {
-	unsigned long	size;
-	char			*tmp;
+	ssize_t	size;
+	char	*tmp;
 
 	if (!delim_ptr)
 	{
@@ -64,7 +64,7 @@ static char	*find_delim(const int fd, char *buffer, char **line,
 	return (delim_ptr);
 }
 
-static _Bool	init_line(char **line, unsigned long *restrict n, char *buffer)
+static _Bool	init_line(char **line, size_t *restrict n, char *buffer)
 {
 	char	*tmp;
 
@@ -87,7 +87,7 @@ static _Bool	init_line(char **line, unsigned long *restrict n, char *buffer)
 	return (0);
 }
 
-unsigned long	ft_getdelim(char **restrict lineptr, unsigned long *restrict n,
+ssize_t	ft_getdelim(char **restrict lineptr, size_t *restrict n,
 	int delim, int fd)
 {
 	static char	buffer[FD_MAX][BUFFER_SIZE + 1];
@@ -105,8 +105,8 @@ unsigned long	ft_getdelim(char **restrict lineptr, unsigned long *restrict n,
 	return (process_result(delim_ptr, line, buffer[fd], lineptr));
 }
 
-inline unsigned long	ft_getline(char **restrict lineptr,
-	unsigned long *restrict n, int fd)
+inline ssize_t	ft_getline(char **restrict lineptr,
+	size_t *restrict n, int fd)
 {
 	return (ft_getdelim(lineptr, n, '\n', fd));
 }

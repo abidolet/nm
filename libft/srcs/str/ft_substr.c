@@ -11,11 +11,10 @@
 /* ************************************************************************** */
 
 #include "libft/str.h"
-#include <stdlib.h>
 
-char	*ft_substr(char const *s, unsigned int start, unsigned long len)
+char	*ft_substr(char const *s, unsigned int start, size_t len)
 {
-	unsigned long	size;
+	size_t	size;
 
 	if (!s)
 		return (NULL);

@@ -6,4 +6,4 @@
 !*.c
 !*.h
 !.gitignore
-!tester.sh
+!tester

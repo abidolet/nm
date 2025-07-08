@@ -6,7 +6,7 @@
 /*   By: abidolet <abidolet@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/31 23:39:27 by abidolet          #+#    #+#             */
-/*   Updated: 2025/07/04 23:38:11 by abidolet         ###   ########.fr       */
+/*   Updated: 2025/07/06 16:37:21 by abidolet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,17 +45,17 @@ static void	get_exponent(char **endptr, double *res)
 
 static void	get_decimal(char **endptr, double *res)
 {
-	double			fraction;
+	double			frargction;
 	const int		precision = 15;
 	int				decimal;
 
 	(*endptr)++;
-	fraction = 1.0;
+	frargction = 1.0;
 	decimal = 0;
 	while (ft_isdigit(**endptr) && decimal++ <= precision)
 	{
-		fraction /= 10.0;
-		*res += (*(*endptr)++ - '0') * fraction;
+		frargction /= 10.0;
+		*res += (*(*endptr)++ - '0') * frargction;
 	}
 	if (**endptr == 'e' || **endptr == 'E')
 	{
